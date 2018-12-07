@@ -30,6 +30,10 @@ class MainActivity : AppCompatActivity() {
                 0 -> {
                     tv.text = it.obj as String
                 }
+
+                -1 ->{
+                    tv.text =it.obj as String
+                }
             }
             true
         }
