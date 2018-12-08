@@ -9,10 +9,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
 import java.lang.StringBuilder
-import java.net.HttpURLConnection
 import java.net.URL
-import java.security.cert.X509Certificate
-import org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
 import java.security.cert.CertificateException
 import javax.net.ssl.*
 
@@ -31,8 +28,8 @@ class MainActivity : AppCompatActivity() {
                     tv.text = it.obj as String
                 }
 
-                -1 ->{
-                    tv.text =it.obj as String
+                -1 -> {
+                    tv.text = it.obj as String
                 }
             }
             true
@@ -65,11 +62,18 @@ class MainActivity : AppCompatActivity() {
                 httpURLConnection.sslSocketFactory = sslContext.socketFactory
                 httpURLConnection.hostnameVerifier = createHostCerifier()
                 httpURLConnection.connectTimeout = 5000
-                httpURLConnection.requestMethod = "GET"
+                httpURLConnection.requestMethod = "POST"
                 httpURLConnection.readTimeout = 5000
 
-                var i = httpURLConnection.inputStream
+                var o = httpURLConnection.outputStream
 
+                o.write(("{\n" +
+                        "\t\"platform\":1,\n" +
+                        "\t\"ts\":${System.currentTimeMillis()}\n" +
+                        "}").toByteArray())
+                o.flush()
+                o.close()
+                var i = httpURLConnection.inputStream
                 var reader = BufferedReader(InputStreamReader(i))
                 var result = StringBuilder()
                 var line: String? = ""
@@ -92,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
     fun createHostCerifier(): HostnameVerifier {
 
-        return HostnameVerifier { hostname, session ->
+        return HostnameVerifier { _, session ->
             val hv = HttpsURLConnection.getDefaultHostnameVerifier()
             hv.verify("shshopping.online.sh.cn", session)
 
